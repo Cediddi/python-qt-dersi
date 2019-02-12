@@ -24,9 +24,9 @@ msg_area = QtWidgets.QLineEdit(window)
 msg_area.show()
 
 
-
 class MyThread(QtCore.QThread):
     data_geldi = QtCore.Signal(str)
+
     def run(self):
         while True:
             time.sleep(1)
@@ -44,16 +44,36 @@ class MyThread(QtCore.QThread):
 thread = MyThread()
 thread.start()
 
-def send_msg():
-    response = mesaj_gonder("Umut", msg_area.text())
-    if response["status"] == "OK":
-        msg_area.clear()
+
+class MyThread2(QtCore.QThread):
+    def __init__(self):
+        super().__init__()
+        self.msg = []
+
+    def run(self):
+        while True:
+            if self.msg:
+                msg = self.msg.pop(0)
+                print(mesaj_gonder("Umut", msg))
+            else:
+                time.sleep(1)
+
+    @QtCore.Slot()
+    def add_msg(self):
+        self.msg.append(msg_area.text())
+
+
+thread2 = MyThread2()
+thread2.start()
+
 
 def scroll_down():
     sb = text_area.verticalScrollBar()
     sb.setValue(sb.maximum())
 
-msg_area.returnPressed.connect(send_msg)
+
+msg_area.returnPressed.connect(thread2.add_msg)
+msg_area.returnPressed.connect(msg_area.clear)
 thread.data_geldi.connect(text_area.setText)
 thread.data_geldi.connect(scroll_down)
 
