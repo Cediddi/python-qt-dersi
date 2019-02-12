@@ -1,18 +1,26 @@
 from PySide2 import QtWidgets
 
-from CustomQUiLoader import UiLoader
-from narcelik import narcelik_rcc
+from narcelik import narcelik_uic
+app = QtWidgets.QApplication()
 
 
-class MyWidget(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        UiLoader().loadUi('untitled.ui', self)
+class MyWidget(narcelik_uic.Ui_Form):
+    def __init__(self):
+        super().__init__()
+        self.main_widget = QtWidgets.QWidget()
+        self.setupUi(self.main_widget)
+        self.retranslateUi(self.main_widget)
         self.pushButton_6.clicked.connect(app.exit)
 
+    def show(self):
+        self.main_widget.show()
 
-if __name__ == '__main__':
-    app = QtWidgets.QApplication()
+
+def main():
     window = MyWidget()
     window.show()
     app.exec_()
+
+
+if __name__ == '__main__':
+    main()

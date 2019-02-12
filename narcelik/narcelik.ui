@@ -20,7 +20,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../../../arcelik.qrc">:/root/Documents/narcelik.png</pixmap>
+      <pixmap resource="narcelik.qrc">:root/narcelik.png</pixmap>
      </property>
     </widget>
    </item>
@@ -103,7 +103,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../arcelik.qrc"/>
+  <include location="narcelik.qrc"/>
  </resources>
  <connections/>
 </ui>
