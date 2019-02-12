@@ -38,7 +38,8 @@ class MyThread(QtCore.QThread):
                     last_sender = d['sender']
                     all_text += "----\n"
                 all_text += f"{d['sender']}: {d['message']}\n"
-            self.data_geldi.emit(all_text)
+            if text_area.toPlainText() != all_text:
+                self.data_geldi.emit(all_text)
 
 
 thread = MyThread()
