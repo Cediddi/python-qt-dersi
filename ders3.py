@@ -1,3 +1,5 @@
+import time
+
 from PySide2 import QtWidgets, QtCore
 from data_conn import mesaj_al, mesaj_gonder
 
@@ -21,31 +23,39 @@ text_area.show()
 msg_area = QtWidgets.QLineEdit(window)
 msg_area.show()
 
-timer = QtCore.QTimer()
-timer.setInterval(3000)
 
+
+class MyThread(QtCore.QThread):
+    data_geldi = QtCore.Signal(str)
+    def run(self):
+        while True:
+            time.sleep(1)
+            data = mesaj_al()["messages"]
+            all_text = ""
+            last_sender = None
+            for d in data:
+                if last_sender != d['sender']:
+                    last_sender = d['sender']
+                    all_text += "----\n"
+                all_text += f"{d['sender']}: {d['message']}\n"
+            self.data_geldi.emit(all_text)
+
+
+thread = MyThread()
+thread.start()
 
 def send_msg():
     response = mesaj_gonder("Umut", msg_area.text())
     if response["status"] == "OK":
         msg_area.clear()
 
-def recv_msg():
-    data = mesaj_al()["messages"]
-    all_text = ""
-    last_sender = None
-    for d in data:
-        if last_sender != d['sender']:
-            last_sender = d['sender']
-            all_text += "----\n"
-        all_text += f"{d['sender']}: {d['message']}\n"
-    text_area.setText(all_text)
+def scroll_down():
     sb = text_area.verticalScrollBar()
     sb.setValue(sb.maximum())
 
-timer.timeout.connect(recv_msg)
-timer.start()
 msg_area.returnPressed.connect(send_msg)
+thread.data_geldi.connect(text_area.setText)
+thread.data_geldi.connect(scroll_down)
 
 layout = QtWidgets.QVBoxLayout(window)
 layout.addWidget(text_area)
